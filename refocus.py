@@ -1,6 +1,6 @@
 import argparse
-import random
 import shutil
+import subprocess
 from pathlib import Path
 from typing import List
 
@@ -32,20 +32,21 @@ def get_file_list(target_path: Path) -> List[Path]:
 
 
 def process_file(source_dir: Path, source_file: Path, output_dir: Path) -> Path:
-    filename = Path(clean_filename(source_file.name))
+    filename = clean_filename(source_file.name)
     output_path = output_dir / source_file.relative_to(source_dir).parent
-    copy_path = output_path / filename
+    copy_path = output_path / (filename + ".wav")
 
     # Append numbers to prevent overwriting other files
     i = 1
     while copy_path.exists():
-        copy_path = output_path / f"{filename.stem}_{i}.mp3"
+        copy_path = output_path / f"{filename}_{i}.wav"
         i += 1
 
-    # print(source_file, "-->", copy_path)
+    print(source_file, "-->", copy_path)
     copy_path.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(source_file, copy_path)    #TODO this will become an FFMPEG call to convert to 16-bit 48kHz WAV
-    # ffmpeg -i input.mp3 -ar 48000 -sample_fmt s16 output.wav
+    # shutil.copy2(source_file, copy_path)
+    subprocess.run(['ffmpeg', '-i', str(source_file), '-ar', '48000', '-sample_fmt', 's16', str(copy_path)],
+                   check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return copy_path
 
 
@@ -62,9 +63,9 @@ def clean_filename(filename: str) -> str:
 
     # Handle a blank filename
     if not filename:
-        return "_.mp3"
+        return "_"
 
-    return filename + ".mp3"
+    return filename
 
 def main(source: str, output: str):
     source_path = Path(source)
@@ -74,6 +75,9 @@ def main(source: str, output: str):
 
     # Get the list of files in the source directory
     file_list = get_file_list(source_path)
+
+    # Create the output directory if it does not exist
+    output_path.mkdir(parents=True, exist_ok=True)
 
     with open(output_path / "refocus.log", mode='w') as log:
         for i, file_path in enumerate(file_list):
