@@ -17,11 +17,15 @@ def main(source: str, output: str):
     # Create the output directory if it does not exist
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    i = 0
     for file_path in file_list:
-        output_file = output_dir / file_path.name[0].upper() / file_path.name
+        output_file = output_dir / file_path.relative_to(source_dir).parent / file_path.name[0].upper() / file_path.name
         output_file.parent.mkdir(parents=True, exist_ok=True)
-        print(file_path, "-->", output_file)
-        shutil.move(file_path, output_file)
+        # print(file_path, "-->", output_file)
+        shutil.copy2(file_path, output_file)
+        i += 1
+        if i % 10 == 0:
+            print(i, "of", len(file_list), f"({round(i / len(file_list) * 100)}%)")
 
 
 if __name__ == '__main__':
