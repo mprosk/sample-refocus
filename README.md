@@ -18,12 +18,15 @@ $ python -m refocus [-h] [--rename] [--rate RATE] {copy,convert,touch,dry} sourc
 `convert` -- converts the source files into WAVs. Requires `ffmpeg`
 
 **Positional arguments**
-`source`  -- root directory containing the files to process. subfolders are recursed automatically
+`source`  -- root directory containing the files to process. subfolders are recursed automaticall
+
 `output` -- target directory in which to put processed files
 
 **Options**
 `-h, --help` -- shows the help message and exits
+
 `--rename` -- if set, filenames will be cleaned up
+
 `--rate RATE` -- sample rate of the output WAV files. Only applies if using `convert` mode. 
 
 
