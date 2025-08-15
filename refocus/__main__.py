@@ -53,7 +53,7 @@ def main(mode: str, source: str, output: str, rename: bool, rate: int):
                     continue
             else:
                 # Don't clean up the file name, just make it relative to the output dir
-                target_file = output_root / source_file.relative_to(source_root).parent / target_file.name
+                target_file = output_root / source_file.relative_to(source_root).parent / source_file.name
 
             target_file.parent.mkdir(parents=True, exist_ok=True)
             exception = None
